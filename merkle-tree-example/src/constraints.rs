@@ -8,10 +8,10 @@ use ark_relations::r1cs::{ConstraintSynthesizer, ConstraintSystemRef, SynthesisE
 // (You don't need to worry about what's going on in the next two type definitions,
 // just know that these are types that you can use.)
 
-/// The R1CS equivalent of the the Merkle tree root.
+/// The R1CS equivalent of the Merkle tree root.
 pub type RootVar = <TwoToOneHashGadget as TwoToOneCRHGadget<TwoToOneHash, ConstraintF>>::OutputVar;
 
-/// The R1CS equivalent of the the Merkle tree path.
+/// The R1CS equivalent of the Merkle tree path.
 pub type SimplePathVar =
     PathVar<crate::MerkleConfig, LeafHashGadget, TwoToOneHashGadget, ConstraintF>;
 
@@ -56,9 +56,12 @@ impl ConstraintSynthesizer<ConstraintF> for MerkleTreeVerification {
         // Hint: look at https://github.com/arkworks-rs/crypto-primitives/blob/6be606259eab0aec010015e2cfd45e4f134cd9bf/src/merkle_tree/constraints.rs#L135
 
         // TODO: FILL IN THE BLANK!
-        // let is_member = XYZ
-        //
-        // is_member.enforce_equal(&Boolean::TRUE)?;
+        let is_member = match path.verify_membership(&leaf_crh_params, &two_to_one_crh_params, &root, &leaf_bytes.as_slice()) {
+            Ok(member) => member,
+            Err(e) => panic!("Error {:?}", e),
+        };
+        //println!("Type of is_member: ", )
+        is_member.enforce_equal(&Boolean::TRUE)?;
 
         Ok(())
     }
